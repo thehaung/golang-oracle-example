@@ -1,3 +1,6 @@
+httpserver:
+  Port: 8083
+
 logger:
   Development: true
   DisableCaller: false

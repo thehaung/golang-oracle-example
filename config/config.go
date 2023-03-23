@@ -7,8 +7,14 @@ import (
 
 // Config App config struct
 type Config struct {
-	Logger Logger
-	Env    *Env
+	HttpServer HttpServer
+	Logger     Logger
+	Env        *Env
+}
+
+// HttpServer config
+type HttpServer struct {
+	Port string
 }
 
 // Logger config

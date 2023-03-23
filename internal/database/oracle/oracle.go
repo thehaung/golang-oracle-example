@@ -19,7 +19,6 @@ type oracleClient struct {
 
 type Client interface {
 	Connect() error
-	Ping() error
 	Disconnect() error
 	GetConnection() (*sql.DB, error)
 }
@@ -30,13 +29,14 @@ func NewOracleClient(conf *config.Config) Client {
 	}
 }
 
-func (o oracleClient) Connect() error {
+func (o *oracleClient) Connect() error {
 	conn, err := sql.Open(_driverName, buildConnectionString(o.conf))
+
 	if err != nil {
 		return err
 	}
 
-	if err = o.Ping(); err != nil {
+	if err = conn.Ping(); err != nil {
 		return err
 	}
 
@@ -45,15 +45,11 @@ func (o oracleClient) Connect() error {
 }
 
 func buildConnectionString(conf *config.Config) string {
-	return stringutil.BuildStringWithParams(_driverName, "://", conf.Env.OracleDB.DBUser, ":", conf.Env.OracleDB.DBPass,
-		"@", conf.Env.OracleDB.DBHost, "/", conf.Env.OracleDB.DBName)
+	return stringutil.BuildStringWithParams(_driverName, "://", conf.Env.DBUser, ":", conf.Env.DBPass,
+		"@", conf.Env.DBHost, "/", conf.Env.DBName)
 }
 
-func (o oracleClient) Ping() error {
-	return o.conn.Ping()
-}
-
-func (o oracleClient) Disconnect() error {
+func (o *oracleClient) Disconnect() error {
 	err := o.conn.Close()
 	if err != nil {
 		return err
@@ -62,7 +58,7 @@ func (o oracleClient) Disconnect() error {
 	return nil
 }
 
-func (o oracleClient) GetConnection() (*sql.DB, error) {
+func (o *oracleClient) GetConnection() (*sql.DB, error) {
 	if o.conn == nil {
 		return nil, errors.New("can't get oracle connection")
 	}

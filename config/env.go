@@ -2,19 +2,16 @@ package config
 
 import (
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
 )
 
 type Env struct {
-	OracleDB Oracle
-}
-
-type Oracle struct {
-	DBHost string `mapstrucuture:"ORACLE_DB_HOST"`
-	DBPort string `mapstrucuture:"ORACLE_DB_PORT"`
-	DBUser string `mapstrucuture:"ORACLE_DB_USER"`
-	DBPass string `mapstrucuture:"ORACLE_DB_PASS"`
-	DBName string `mapstrucuture:"ORACLE_DB_NAME"`
+	DBHost string `mapstructure:"ORACLE_DB_HOST" validate:"required"`
+	DBPort string `mapstructure:"ORACLE_DB_PORT" validate:"required"`
+	DBUser string `mapstructure:"ORACLE_DB_USER" validate:"required"`
+	DBPass string `mapstructure:"ORACLE_DB_PASS" validate:"required"`
+	DBName string `mapstructure:"ORACLE_DB_NAME" validate:"required"`
 }
 
 func loadEnv() (*Env, error) {
@@ -29,6 +26,11 @@ func loadEnv() (*Env, error) {
 	err = viper.Unmarshal(&env)
 	if err != nil {
 		return nil, fmt.Errorf("environment can't be loaded: %w", err)
+	}
+
+	validate := validator.New()
+	if err = validate.Struct(&env); err != nil {
+		return nil, fmt.Errorf("required environment can't be loaded: %w", err)
 	}
 
 	return &env, nil

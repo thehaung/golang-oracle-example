@@ -6,7 +6,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-playground/validator/v10 v10.12.0
 	github.com/prometheus/client_golang v1.14.0
-	github.com/sijms/go-ora/v2 v2.6.3
+	github.com/sijms/go-ora/v2 v2.6.6
 	github.com/spf13/viper v1.15.0
 )
 

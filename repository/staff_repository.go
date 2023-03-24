@@ -77,7 +77,8 @@ func (s staffRepository) Create(ctx context.Context, arg domain.Staff) (domain.S
 	var staff domain.Staff
 	createQuery := stringutil.BuildStringWithParams(`INSERT INTO `, _staffTableName,
 		` (ID, NAME, TEAM_NAME, ORGANIZATION, TITLE, ONBOARD_DATE) VALUES(:1, :2, :3, :4, :5, :6)`,
-		` RETURNING NAME, TEAM_NAME INTO :8, :9`)
+		` RETURNING ID, NAME, TEAM_NAME, ORGANIZATION, TITLE, ONBOARD_DATE, CREATED_AT`,
+		` INTO :id, :name, :team_name, :organization, :title, :onboard_date, :created_at`)
 
 	stmt, err := s.oracleDB.Prepare(createQuery)
 	defer func() {
@@ -91,8 +92,13 @@ func (s staffRepository) Create(ctx context.Context, arg domain.Staff) (domain.S
 		arg.Organization,
 		arg.Title,
 		arg.OnboardDate,
+		sql.Out{Dest: &staff.ID},
 		go_ora.Out{Dest: &staff.Name, Size: 100},
 		go_ora.Out{Dest: &staff.TeamName, Size: 100},
+		go_ora.Out{Dest: &staff.Organization, Size: 100},
+		go_ora.Out{Dest: &staff.Title, Size: 100},
+		sql.Out{Dest: &staff.OnboardDate},
+		sql.Out{Dest: &staff.CreatedAt},
 	)
 
 	return staff, err

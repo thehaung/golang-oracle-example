@@ -31,17 +31,6 @@ func (s staffUseCase) Update(ctx context.Context, staff domain.Staff) (domain.St
 	return s.staffRepository.Update(ctx, staff)
 }
 
-func (s staffUseCase) InActive(ctx context.Context, id int64) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (s staffUseCase) Active(ctx context.Context, id int64) error {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (s staffUseCase) Delete(ctx context.Context, id int64) error {
-	//TODO implement me
-	panic("implement me")
+	return s.staffRepository.Delete(ctx, id)
 }

@@ -72,7 +72,5 @@ type StaffUseCase interface {
 	FindById(ctx context.Context, id int64) (Staff, error)
 	Create(ctx context.Context, staff Staff) (Staff, error)
 	Update(ctx context.Context, staff Staff) (Staff, error)
-	InActive(ctx context.Context, id int64) error
-	Active(ctx context.Context, id int64) error
 	Delete(ctx context.Context, id int64) error
 }

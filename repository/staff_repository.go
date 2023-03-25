@@ -25,7 +25,8 @@ func NewStaffRepository(oracleDB *sql.DB) domain.StaffRepository {
 }
 
 func (s staffRepository) List(ctx context.Context) ([]domain.Staff, error) {
-	rows, err := s.oracleDB.Query("SELECT ID, NAME, TEAM_NAME, ORGANIZATION, TITLE, ONBOARD_DATE, ACTIVE, CREATED_AT, MODIFIED_AT FROM " + _staffTableName)
+	rows, err := s.oracleDB.Query("SELECT ID, NAME, TEAM_NAME, ORGANIZATION, TITLE, ONBOARD_DATE, ACTIVE, CREATED_AT, MODIFIED_AT FROM " +
+		_staffTableName + " WHERE ACTIVE = 1 ORDER BY CREATED_AT DESC")
 	if err != nil {
 		return nil, err
 	}
@@ -160,16 +161,37 @@ func (s staffRepository) Update(ctx context.Context, arg domain.Staff) (domain.S
 }
 
 func (s staffRepository) InActive(ctx context.Context, id int64) error {
-	//TODO implement me
-	panic("implement me")
+	inActiveQuery := stringutil.BuildStringWithParams(`UPDATE `, _staffTableName, ` SET ACTIVE = 0,`,
+		` MODIFIED_AT = CURRENT_DATE, DELETED_AT = CURRENT_DATE WHERE :id = 1`)
+	stmt, err := s.oracleDB.Prepare(inActiveQuery)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		_ = stmt.Close()
+	}()
+
+	_, err = stmt.ExecContext(ctx, id)
+	return err
 }
 
 func (s staffRepository) Active(ctx context.Context, id int64) error {
-	//TODO implement me
-	panic("implement me")
+	activeQuery := stringutil.BuildStringWithParams(`UPDATE `, _staffTableName, `SET ACTIVE = 1,`,
+		` MODIFIED_AT = CURRENT_DATE WHERE :id = 1`)
+	stmt, err := s.oracleDB.Prepare(activeQuery)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		_ = stmt.Close()
+	}()
+
+	_, err = stmt.ExecContext(ctx, id)
+	return err
 }
 
 func (s staffRepository) Delete(ctx context.Context, id int64) error {
-	//TODO implement me
-	panic("implement me")
+	return s.InActive(ctx, id)
 }

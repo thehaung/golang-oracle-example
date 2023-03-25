@@ -25,6 +25,7 @@ func newStaffRoute(router *chi.Mux, useCase domain.StaffUseCase) {
 		r.Get("/", route.listStaff)
 		r.Get("/{id}", route.findStaffById)
 		r.Put("/{id}", route.updateStaff)
+		r.Delete("/{id}", route.deleteStaffById)
 	})
 }
 
@@ -125,4 +126,22 @@ func (s *staffRoutes) updateStaff(w http.ResponseWriter, r *http.Request) {
 	}
 
 	httpUtil.WriteJson(http.StatusOK, updated)
+}
+
+func (s *staffRoutes) deleteStaffById(w http.ResponseWriter, r *http.Request) {
+	httpUtil := httputil.NewHttpUtil(w, r)
+
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil || id == 0 {
+		httpUtil.WriteError(http.StatusBadRequest, "id is invalid type", err)
+		return
+	}
+
+	err = s.staffUseCase.Delete(context.Background(), int64(id))
+	if err != nil {
+		httpUtil.WriteError(http.StatusInternalServerError, "Can't delete Staff. Try again!", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

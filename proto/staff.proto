@@ -1,0 +1,73 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/thehaung/golang-oracle-example/proto/pb/staffpb";
+
+message Staff {
+  int64 id = 1;
+  string name = 2;
+  string team_name = 3;
+  string organization = 4;
+  string title = 5;
+  google.protobuf.Timestamp onboard_date = 6;
+  bool active = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp modified_at = 9;
+  google.protobuf.Timestamp deleted_at = 10;
+}
+
+message CreateStaffRequest {
+  int64 id = 1;
+  string name = 2;
+  string team_name = 3;
+  string organization = 4;
+  string title = 5;
+  google.protobuf.Timestamp onboard_date = 6;
+}
+
+message CreateStaffResponse {
+  int64 id = 1;
+  string name = 2;
+  string team_name = 3;
+  string organization = 4;
+  string title = 5;
+  google.protobuf.Timestamp onboard_date = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message UpdateStaffRequest {
+  int64 id = 1;
+  string name = 2;
+  string team_name = 3;
+  string organization = 4;
+  string title = 5;
+  google.protobuf.Timestamp onboard_date = 6;
+}
+
+message UpdateStaffResponse {
+  int64 id = 1;
+  string name = 2;
+  string team_name = 3;
+  string organization = 4;
+  string title = 5;
+  google.protobuf.Timestamp onboard_date = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp modified_at = 8;
+}
+
+message ListStaffResponse {
+  repeated Staff staffs = 1;
+}
+
+message StaffId {
+  int64 id = 1;
+}
+
+service StaffService {
+  rpc listStaff(google.protobuf.Empty) returns (ListStaffResponse);
+  rpc createStaff(CreateStaffRequest) returns (CreateStaffResponse);
+  rpc updateStaff(UpdateStaffRequest) returns (UpdateStaffResponse);
+  rpc findStaffById(StaffId) returns (Staff);
+  rpc deleteStaff(StaffId) returns (google.protobuf.Empty);
+}

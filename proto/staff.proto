@@ -2,7 +2,7 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
-option go_package = "github.com/thehaung/golang-oracle-example/proto/pb/staffpb";
+option go_package = "github.com/thehaung/golang-oracle-example/proto/pb/pb";
 
 message Staff {
   int64 id = 1;

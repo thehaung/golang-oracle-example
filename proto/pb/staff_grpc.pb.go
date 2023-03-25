@@ -4,7 +4,7 @@
 // - protoc             v3.15.8
 // source: staff.proto
 
-package staffpb
+package pb
 
 import (
 	context "context"

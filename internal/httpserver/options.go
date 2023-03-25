@@ -6,7 +6,7 @@ import (
 )
 
 // Option -.
-type Option func(*HttpServer)
+type Option func(server *HttpServer)
 
 // Port -.
 func Port(port string) Option {

@@ -5,13 +5,13 @@ import (
 	"github.com/thehaung/golang-oracle-example/proto/pb"
 )
 
-type Server struct {
+type StaffService struct {
 	staffUseCase domain.StaffUseCase
 	pb.UnimplementedStaffServiceServer
 }
 
-func NewTransport(useCase domain.StaffUseCase) *Server {
-	return &Server{
+func NewStaffService(useCase domain.StaffUseCase) *StaffService {
+	return &StaffService{
 		staffUseCase: useCase,
 	}
 }

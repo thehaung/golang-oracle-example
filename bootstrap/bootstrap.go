@@ -68,7 +68,7 @@ func setupHttpServer(conf *config.Config, staffUseCase domain.StaffUseCase) {
 }
 
 func setupGrpcServer(conf *config.Config, staffUseCase domain.StaffUseCase) {
-	server := grpctransport.NewTransport(staffUseCase)
+	server := grpctransport.NewStaffService(staffUseCase)
 	grpcServer := grpcserver.NewGrpcServer(conf)
 	pb.RegisterStaffServiceServer(grpcServer.Server(), server)
 

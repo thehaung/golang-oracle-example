@@ -16,8 +16,7 @@ func NewStaffUseCase(staffRepository domain.StaffRepository) domain.StaffUseCase
 }
 
 func (s staffUseCase) List(ctx context.Context) ([]domain.Staff, error) {
-	//TODO implement me
-	panic("implement me")
+	return s.staffRepository.List(ctx)
 }
 
 func (s staffUseCase) FindById(ctx context.Context, id int64) (domain.Staff, error) {
@@ -28,9 +27,8 @@ func (s staffUseCase) Create(ctx context.Context, staff domain.Staff) (domain.St
 	return s.staffRepository.Create(ctx, staff)
 }
 
-func (s staffUseCase) Update(ctx context.Context, id int64, staff domain.Staff) (domain.Staff, error) {
-	//TODO implement me
-	panic("implement me")
+func (s staffUseCase) Update(ctx context.Context, staff domain.Staff) (domain.Staff, error) {
+	return s.staffRepository.Update(ctx, staff)
 }
 
 func (s staffUseCase) InActive(ctx context.Context, id int64) error {

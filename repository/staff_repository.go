@@ -7,7 +7,6 @@ import (
 	go_ora "github.com/sijms/go-ora/v2"
 	"github.com/thehaung/golang-oracle-example/domain"
 	"github.com/thehaung/golang-oracle-example/internal/util/stringutil"
-	"github.com/thehaung/golang-oracle-example/internal/util/structutil"
 	"log"
 )
 
@@ -26,33 +25,9 @@ func NewStaffRepository(oracleDB *sql.DB) domain.StaffRepository {
 }
 
 func (s staffRepository) List(ctx context.Context) ([]domain.Staff, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (s staffRepository) FindById(ctx context.Context, id int64) (domain.Staff, error) {
-	//findByIdQuery := stringutil.BuildStringWithParams("SELECT ID, NAME, TEAM_NAME, ORGANIZATION, TITLE, ONBOARD_DATE, ACTIVE, ",
-	//	"CREATED_AT, MODIFIED_AT, DELETED_AT FROM ", _staffTableName, " WHERE ID = :1")
-	//row := s.oracleDB.QueryRowContext(ctx, findByIdQuery, id)
-
-	var staff domain.Staff
-
-	//err := row.Scan(
-	//	&staff.ID,
-	//	&staff.Name,
-	//	&staff.TeamName,
-	//	&staff.Organization,
-	//	&staff.Title,
-	//	&staff.OnboardDate,
-	//	&staff.Active,
-	//	&staff.CreatedAt,
-	//	&staff.ModifiedAt,
-	//	&staff.DeletedAt,
-	//)
-
-	rows, err := s.oracleDB.Query("SELECT ID, NAME, TEAM_NAME, ORGANIZATION, TITLE, ONBOARD_DATE FROM " + _staffTableName)
+	rows, err := s.oracleDB.Query("SELECT ID, NAME, TEAM_NAME, ORGANIZATION, TITLE, ONBOARD_DATE, ACTIVE, CREATED_AT, MODIFIED_AT FROM " + _staffTableName)
 	if err != nil {
-		log.Println(err)
+		return nil, err
 	}
 	defer func() {
 		err = rows.Close()
@@ -61,16 +36,56 @@ func (s staffRepository) FindById(ctx context.Context, id int64) (domain.Staff, 
 		}
 	}()
 
-	log.Println(rows)
+	var staffs []domain.Staff
 	for rows.Next() {
-		err = rows.Scan(&staff.ID, &staff.Name, &staff.TeamName, &staff.Organization, &staff.Title, &staff.OnboardDate)
+		var staff domain.Staff
+		err = rows.Scan(
+			&staff.ID,
+			&staff.Name,
+			&staff.TeamName,
+			&staff.Organization,
+			&staff.Title,
+			&staff.OnboardDate,
+			&staff.Active,
+			&staff.CreatedAt,
+			&staff.ModifiedAt,
+		)
+
 		if err != nil {
 			log.Println(err)
+			continue
 		}
 
-		log.Println(structutil.ToJsonString(staff))
+		staffs = append(staffs, staff)
 	}
-	return staff, nil
+
+	return staffs, err
+}
+
+func (s staffRepository) FindById(ctx context.Context, id int64) (domain.Staff, error) {
+	findByIdQuery := stringutil.BuildStringWithParams("SELECT ID, NAME, TEAM_NAME, ORGANIZATION, TITLE, ONBOARD_DATE, ACTIVE, ",
+		"CREATED_AT, MODIFIED_AT, DELETED_AT FROM ", _staffTableName, " WHERE ID = :1")
+	row := s.oracleDB.QueryRowContext(ctx, findByIdQuery, id)
+
+	var staff domain.Staff
+	var deletedAt sql.NullTime
+	err := row.Scan(
+		&staff.ID,
+		&staff.Name,
+		&staff.TeamName,
+		&staff.Organization,
+		&staff.Title,
+		&staff.OnboardDate,
+		&staff.Active,
+		&staff.CreatedAt,
+		&staff.ModifiedAt,
+		&deletedAt,
+	)
+
+	if deletedAt.Valid {
+		staff.DeletedAt = &deletedAt.Time
+	}
+	return staff, err
 }
 
 func (s staffRepository) Create(ctx context.Context, arg domain.Staff) (domain.Staff, error) {
@@ -81,6 +96,10 @@ func (s staffRepository) Create(ctx context.Context, arg domain.Staff) (domain.S
 		` INTO :id, :name, :team_name, :organization, :title, :onboard_date, :created_at`)
 
 	stmt, err := s.oracleDB.Prepare(createQuery)
+	if err != nil {
+		return staff, err
+	}
+
 	defer func() {
 		_ = stmt.Close()
 	}()
@@ -104,9 +123,40 @@ func (s staffRepository) Create(ctx context.Context, arg domain.Staff) (domain.S
 	return staff, err
 }
 
-func (s staffRepository) Update(ctx context.Context, id int64, arg domain.Staff) (domain.Staff, error) {
-	//TODO implement me
-	panic("implement me")
+func (s staffRepository) Update(ctx context.Context, arg domain.Staff) (domain.Staff, error) {
+	var staff domain.Staff
+	updateQuery := stringutil.BuildStringWithParams(`UPDATE `, _staffTableName,
+		` SET NAME = :1, TEAM_NAME = :2, ORGANIZATION = :3, TITLE = :4, ONBOARD_DATE = :5, MODIFIED_AT = CURRENT_DATE WHERE id = :6`,
+		` RETURNING ID, NAME, TEAM_NAME, ORGANIZATION, TITLE, ONBOARD_DATE, CREATED_AT, MODIFIED_AT`,
+		` INTO :id, :name, :team_name, :organization, :title, :onboard_date, :created_at, :modified_at`)
+
+	stmt, err := s.oracleDB.Prepare(updateQuery)
+	if err != nil {
+		return staff, err
+	}
+
+	defer func() {
+		_ = stmt.Close()
+	}()
+
+	_, err = stmt.ExecContext(ctx,
+		arg.Name,
+		arg.TeamName,
+		arg.Organization,
+		arg.Title,
+		arg.OnboardDate,
+		arg.ID,
+		sql.Out{Dest: &staff.ID},
+		go_ora.Out{Dest: &staff.Name, Size: 100},
+		go_ora.Out{Dest: &staff.TeamName, Size: 100},
+		go_ora.Out{Dest: &staff.Organization, Size: 100},
+		go_ora.Out{Dest: &staff.Title, Size: 100},
+		sql.Out{Dest: &staff.OnboardDate},
+		sql.Out{Dest: &staff.CreatedAt},
+		sql.Out{Dest: &staff.ModifiedAt},
+	)
+
+	return staff, err
 }
 
 func (s staffRepository) InActive(ctx context.Context, id int64) error {

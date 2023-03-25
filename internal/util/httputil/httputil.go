@@ -30,7 +30,7 @@ func (h *HttpUtil) WriteJson(status int, data interface{}) {
 		log.Println()
 	}
 
-	if _, err := h.Writer.Write(res); err != nil {
+	if _, err = h.Writer.Write(res); err != nil {
 		log.Println(err.Error())
 	}
 }

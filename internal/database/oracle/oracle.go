@@ -46,7 +46,7 @@ func (o *oracleClient) Connect() error {
 
 func buildConnectionString(conf *config.Config) string {
 	return stringutil.BuildStringWithParams(_driverName, "://", conf.Env.DBUser, ":", conf.Env.DBPass,
-		"@", conf.Env.DBHost, "/", conf.Env.DBName)
+		"@", conf.Env.DBHost, ":", conf.Env.DBPort, "/", conf.Env.DBName)
 }
 
 func (o *oracleClient) Disconnect() error {

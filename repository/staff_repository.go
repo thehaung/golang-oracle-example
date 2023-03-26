@@ -84,7 +84,7 @@ func (s staffRepository) FindById(ctx context.Context, id int64) (domain.Staff, 
 	)
 
 	if deletedAt.Valid {
-		staff.DeletedAt = &deletedAt.Time
+		staff.DeletedAt = deletedAt.Time
 	}
 	return staff, err
 }

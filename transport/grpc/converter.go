@@ -17,6 +17,6 @@ func convertStaff(staff domain.Staff) *pb.Staff {
 		Active:       staff.Active,
 		CreatedAt:    timestamppb.New(staff.CreatedAt),
 		ModifiedAt:   timestamppb.New(staff.ModifiedAt),
-		DeletedAt:    timestamppb.New(*staff.DeletedAt),
+		DeletedAt:    timestamppb.New(staff.DeletedAt),
 	}
 }

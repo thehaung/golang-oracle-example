@@ -8,12 +8,18 @@ import (
 // Config App config struct
 type Config struct {
 	HttpServer HttpServer
+	GrpcServer GrpcServer
 	Logger     Logger
 	Env        *Env
 }
 
 // HttpServer config
 type HttpServer struct {
+	Port string
+}
+
+// GrpcServer config
+type GrpcServer struct {
 	Port string
 }
 

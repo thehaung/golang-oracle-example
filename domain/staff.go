@@ -6,16 +6,16 @@ import (
 )
 
 type Staff struct {
-	ID           int64      `json:"id"`
-	Name         string     `json:"name"`
-	TeamName     string     `json:"team_name"`
-	Organization string     `json:"organization"`
-	Title        string     `json:"title"`
-	OnboardDate  time.Time  `json:"onboard_date"`
-	Active       bool       `json:"active"`
-	CreatedAt    time.Time  `json:"created_at"`
-	ModifiedAt   time.Time  `json:"modified_at"`
-	DeletedAt    *time.Time `json:"deleted_at,omitempty"`
+	ID           int64     `json:"id"`
+	Name         string    `json:"name"`
+	TeamName     string    `json:"team_name"`
+	Organization string    `json:"organization"`
+	Title        string    `json:"title"`
+	OnboardDate  time.Time `json:"onboard_date"`
+	Active       bool      `json:"active"`
+	CreatedAt    time.Time `json:"created_at"`
+	ModifiedAt   time.Time `json:"modified_at"`
+	DeletedAt    time.Time `json:"deleted_at,omitempty"`
 }
 
 type CreateStaffRequest struct {

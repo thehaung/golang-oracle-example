@@ -39,9 +39,11 @@ func Run(conf *config.Config) {
 	// UseCase
 	staffUseCase := usecase.NewStaffUseCase(staffRepository)
 
+	// GRPC Server
+	go setupGrpcServer(conf, staffUseCase)
+
 	// HttpServer
-	go setupHttpServer(conf, staffUseCase)
-	setupGrpcServer(conf, staffUseCase)
+	setupHttpServer(conf, staffUseCase)
 }
 
 func setupHttpServer(conf *config.Config, staffUseCase domain.StaffUseCase) {
@@ -49,7 +51,7 @@ func setupHttpServer(conf *config.Config, staffUseCase domain.StaffUseCase) {
 	router := chi.NewRouter()
 	route.Setup(router, staffUseCase)
 	httpServer := httpserver.NewServer(router, httpserver.Port(conf.HttpServer.Port))
-	log.Println("HttpServer is serve at port", conf.HttpServer.Port)
+	log.Println("The HttpServer is running on port", conf.HttpServer.Port)
 	// Waiting signal
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
@@ -70,6 +72,8 @@ func setupHttpServer(conf *config.Config, staffUseCase domain.StaffUseCase) {
 func setupGrpcServer(conf *config.Config, staffUseCase domain.StaffUseCase) {
 	server := grpctransport.NewStaffService(staffUseCase)
 	grpcServer := grpcserver.NewGrpcServer(conf)
+	log.Println("The GrpcServer is running on port", conf.GrpcServer.Port)
+
 	pb.RegisterStaffServiceServer(grpcServer.Server(), server)
 
 	// Waiting signal

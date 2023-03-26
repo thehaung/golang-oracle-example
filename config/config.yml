@@ -1,5 +1,8 @@
 httpserver:
-  Port: 8083
+  Port: 8081
+
+grpcserver:
+  Port: 8082
 
 logger:
   Development: true

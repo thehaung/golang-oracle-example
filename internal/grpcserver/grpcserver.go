@@ -47,7 +47,6 @@ func (s *GrpcServer) start() {
 			return
 		}
 
-		log.Printf("GrpcServer serve at tcp port %s", s.port)
 		s.notify <- s.server.Serve(lis)
 		close(s.notify)
 	}()

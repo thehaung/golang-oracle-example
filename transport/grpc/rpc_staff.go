@@ -3,13 +3,11 @@ package grpctransport
 import (
 	"context"
 	"github.com/thehaung/golang-oracle-example/domain"
-	"github.com/thehaung/golang-oracle-example/internal/util/timeutil"
 	"github.com/thehaung/golang-oracle-example/proto/pb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"time"
 )
 
 func (s *StaffService) ListStaff(ctx context.Context, _ *emptypb.Empty) (*pb.ListStaffResponse, error) {
@@ -61,8 +59,6 @@ func (s *StaffService) UpdateStaff(ctx context.Context, req *pb.UpdateStaffReque
 }
 
 func (s *StaffService) FindStaffById(ctx context.Context, req *pb.StaffId) (*pb.Staff, error) {
-	defer timeutil.TimeTrack(time.Now())
-
 	staff, err := s.staffUseCase.FindById(ctx, req.GetId())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "can't find the staff: %s", err)

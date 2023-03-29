@@ -28,6 +28,7 @@ func (s staffRepository) List(ctx context.Context) ([]domain.Staff, error) {
 	rows, err := s.oracleDB.Query("SELECT ID, NAME, TEAM_NAME, ORGANIZATION, TITLE, ONBOARD_DATE, ACTIVE, CREATED_AT, MODIFIED_AT FROM " +
 		_staffTableName + " WHERE ACTIVE = 1 ORDER BY CREATED_AT DESC")
 	if err != nil {
+		fmt.Println("rows query: ", err)
 		return nil, err
 	}
 	defer func() {

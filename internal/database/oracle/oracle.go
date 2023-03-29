@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"errors"
 	_ "github.com/sijms/go-ora/v2"
+	go_ora "github.com/sijms/go-ora/v2"
 	"github.com/thehaung/golang-oracle-example/config"
 	"github.com/thehaung/golang-oracle-example/internal/util/stringutil"
+	"log"
 )
 
 const (
@@ -30,8 +32,14 @@ func NewOracleClient(conf *config.Config) Client {
 }
 
 func (o *oracleClient) Connect() error {
-	conn, err := sql.Open(_driverName, buildConnectionString(o.conf))
+	urlOptions := map[string]string{
+		"FAILOVER":   "10", // the number represent how many times driver will try to reconnect before fail
+		"TRACE FILE": "trace.log",
+	}
+	databaseUrl := go_ora.BuildUrl("localhost", 1521, o.conf.Env.DBName, o.conf.Env.DBUser, o.conf.Env.DBPass, urlOptions)
+	conn, err := sql.Open(_driverName, databaseUrl)
 
+	log.Println(databaseUrl)
 	if err != nil {
 		return err
 	}
@@ -46,7 +54,7 @@ func (o *oracleClient) Connect() error {
 
 func buildConnectionString(conf *config.Config) string {
 	return stringutil.BuildStringWithParams(_driverName, "://", conf.Env.DBUser, ":", conf.Env.DBPass,
-		"@", conf.Env.DBHost, ":", conf.Env.DBPort, "/", conf.Env.DBName)
+		"@", conf.Env.DBHost, ":", conf.Env.DBPort, "/", conf.Env.DBName, "?FAILOVER=5")
 }
 
 func (o *oracleClient) Disconnect() error {

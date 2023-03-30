@@ -34,6 +34,7 @@ func NewOracleClient(conf *config.Config) Client {
 func (o *oracleClient) Connect() error {
 	urlOptions := map[string]string{
 		"FAILOVER":   "10", // the number represent how many times driver will try to reconnect before fail
+		"RETRYTIME":  "1000",
 		"TRACE FILE": "trace.log",
 	}
 	databaseUrl := go_ora.BuildUrl("localhost", 1521, o.conf.Env.DBName, o.conf.Env.DBUser, o.conf.Env.DBPass, urlOptions)
